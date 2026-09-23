@@ -1,0 +1,44 @@
+<%- include('../partials/head') %>
+<section class="card">
+  <h1>Share “<%= folder.name %>”</h1>
+  <p class="muted">
+    Anyone with the link can browse this folder and everything inside it, and
+    download its files — no account needed. The link stops working when it expires.
+  </p>
+  <%- include('../partials/flash') %>
+
+  <form method="post" action="/drive/<%= folder.id %>/share" class="stacked">
+    <label>
+      Valid for
+      <input type="text" name="duration" value="7d" placeholder="e.g. 30m, 12h, 7d, 2w" required />
+      <small>Use m (minutes), h (hours), d (days) or w (weeks). A plain number means days.</small>
+    </label>
+    <button class="button" type="submit">Create share link</button>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Active links</h2>
+  <% if (!links.length) { %>
+    <p class="muted empty">No active links for this folder.</p>
+  <% } else { %>
+    <table class="listing">
+      <thead><tr><th>Link</th><th>Expires</th><th class="right">Actions</th></tr></thead>
+      <tbody>
+        <% links.forEach((link) => { %>
+          <tr>
+            <td><a class="mono" href="/share/<%= link.id %>"><%= baseUrl %>/share/<%= link.id %></a></td>
+            <td class="muted"><%= formatDate(link.expiresAt) %></td>
+            <td class="right">
+              <form method="post" action="/drive/<%= folder.id %>/share/<%= link.id %>?_method=DELETE" class="inline">
+                <button class="link danger" type="submit">Revoke</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+  <a class="button ghost small" href="/drive/<%= folder.id %>">Back to folder</a>
+</section>
+<%- include('../partials/foot') %>

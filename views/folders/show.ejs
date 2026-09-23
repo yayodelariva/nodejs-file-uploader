@@ -1,0 +1,93 @@
+<%- include('../partials/head') %>
+<%- include('../partials/flash') %>
+
+<nav class="crumbs">
+  <a href="/drive">My drive</a>
+  <% trail.forEach((entry, index) => { %>
+    <span aria-hidden="true">/</span>
+    <% if (index === trail.length - 1) { %>
+      <span class="current"><%= entry.name %></span>
+    <% } else { %>
+      <a href="/drive/<%= entry.id %>"><%= entry.name %></a>
+    <% } %>
+  <% }); %>
+</nav>
+
+<div class="page-head">
+  <h1><%= folder ? folder.name : 'My drive' %></h1>
+  <% if (folder) { %>
+    <div class="row-actions">
+      <a class="button small ghost" href="/drive/<%= folder.id %>/edit">Rename</a>
+      <a class="button small ghost" href="/drive/<%= folder.id %>/share">Share</a>
+      <form method="post" action="/drive/<%= folder.id %>?_method=DELETE" class="inline"
+            onsubmit="return confirm('Delete this folder and everything inside it?')">
+        <button class="button small danger" type="submit">Delete</button>
+      </form>
+    </div>
+  <% } %>
+</div>
+
+<div class="panels">
+  <section class="card">
+    <h2>New folder</h2>
+    <form method="post" action="/drive" class="stacked">
+      <input type="hidden" name="parentId" value="<%= folder ? folder.id : '' %>" />
+      <input type="text" name="name" placeholder="Folder name" maxlength="80" required />
+      <button class="button" type="submit">Create</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Upload a file</h2>
+    <form method="post" action="/files" enctype="multipart/form-data" class="stacked">
+      <input type="hidden" name="folderId" value="<%= folder ? folder.id : '' %>" />
+      <input type="file" name="file" required />
+      <button class="button" type="submit">Upload</button>
+    </form>
+    <small class="muted">Up to <%= maxUploadMb %> MB. Accepted: <%= allowedExtensions %></small>
+  </section>
+</div>
+
+<section class="card">
+  <h2>Contents</h2>
+  <% if (!children.length && !files.length) { %>
+    <p class="muted empty">This folder is empty.</p>
+  <% } else { %>
+    <table class="listing">
+      <thead>
+        <tr><th>Name</th><th>Size</th><th>Added</th><th class="right">Actions</th></tr>
+      </thead>
+      <tbody>
+        <% children.forEach((child) => { %>
+          <tr>
+            <td><a href="/drive/<%= child.id %>">📁 <%= child.name %></a></td>
+            <td class="muted">—</td>
+            <td class="muted"><%= formatDate(child.createdAt) %></td>
+            <td class="right">
+              <a class="link" href="/drive/<%= child.id %>/share">Share</a>
+              <form method="post" action="/drive/<%= child.id %>?_method=DELETE" class="inline"
+                    onsubmit="return confirm('Delete this folder and everything inside it?')">
+                <button class="link danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+        <% files.forEach((file) => { %>
+          <tr>
+            <td><a href="/files/<%= file.id %>">📄 <%= file.name %></a></td>
+            <td class="muted"><%= formatBytes(file.size) %></td>
+            <td class="muted"><%= formatDate(file.createdAt) %></td>
+            <td class="right">
+              <a class="link" href="/files/<%= file.id %>/download">Download</a>
+              <form method="post" action="/files/<%= file.id %>?_method=DELETE" class="inline"
+                    onsubmit="return confirm('Delete this file?')">
+                <button class="link danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+<%- include('../partials/foot') %>

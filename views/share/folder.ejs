@@ -1,0 +1,47 @@
+<%- include('../partials/head') %>
+<p class="alert info">
+  Shared folder — this link expires <%= formatDate(share.expiresAt) %>.
+</p>
+
+<nav class="crumbs">
+  <% trail.forEach((entry, index) => { %>
+    <% if (index) { %><span aria-hidden="true">/</span><% } %>
+    <% if (index === trail.length - 1) { %>
+      <span class="current"><%= entry.name %></span>
+    <% } else { %>
+      <a href="/share/<%= share.id %>/folders/<%= entry.id %>"><%= entry.name %></a>
+    <% } %>
+  <% }); %>
+</nav>
+
+<section class="card">
+  <h1>📁 <%= folder.name %></h1>
+  <% if (!children.length && !files.length) { %>
+    <p class="muted empty">This folder is empty.</p>
+  <% } else { %>
+    <table class="listing">
+      <thead><tr><th>Name</th><th>Size</th><th>Added</th><th class="right">Actions</th></tr></thead>
+      <tbody>
+        <% children.forEach((child) => { %>
+          <tr>
+            <td><a href="/share/<%= share.id %>/folders/<%= child.id %>">📁 <%= child.name %></a></td>
+            <td class="muted">—</td>
+            <td class="muted"><%= formatDate(child.createdAt) %></td>
+            <td class="right muted">—</td>
+          </tr>
+        <% }); %>
+        <% files.forEach((file) => { %>
+          <tr>
+            <td><a href="/share/<%= share.id %>/files/<%= file.id %>">📄 <%= file.name %></a></td>
+            <td class="muted"><%= formatBytes(file.size) %></td>
+            <td class="muted"><%= formatDate(file.createdAt) %></td>
+            <td class="right">
+              <a class="link" href="/share/<%= share.id %>/files/<%= file.id %>/download">Download</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+<%- include('../partials/foot') %>

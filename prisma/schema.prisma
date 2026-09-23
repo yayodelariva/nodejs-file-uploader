@@ -1,0 +1,86 @@
+// Prisma schema for the file uploader.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  folders Folder[]
+  files   File[]
+  shares  Share[]
+}
+
+model Folder {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  // A null parent means the folder sits at the root of the owner's drive.
+  parentId String?
+  parent   Folder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children Folder[] @relation("FolderTree")
+
+  files  File[]
+  shares Share[]
+
+  @@index([ownerId, parentId])
+}
+
+model File {
+  id        String   @id @default(uuid())
+  name      String
+  size      Int
+  mimeType  String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  // Where the bytes actually live: "local", "supabase" or "cloudinary".
+  provider   String
+  storageKey String
+  url        String?
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  folderId String?
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId, folderId])
+}
+
+model Share {
+  id        String   @id @default(uuid())
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  folderId String
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([folderId])
+}
+
+// Backing store for @quixo3/prisma-session-store.
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime @db.Timestamptz(3)
+}

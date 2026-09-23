@@ -1,0 +1,11 @@
+<% successMessages.forEach((message) => { %>
+  <p class="alert success"><%= message %></p>
+<% }); %>
+<% errorMessages.forEach((message) => { %>
+  <p class="alert error"><%= message %></p>
+<% }); %>
+<% if (typeof errors !== 'undefined' && errors.length) { %>
+  <ul class="alert error">
+    <% errors.forEach((error) => { %><li><%= error.msg %></li><% }); %>
+  </ul>
+<% } %>

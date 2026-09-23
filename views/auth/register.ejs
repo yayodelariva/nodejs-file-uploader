@@ -1,0 +1,27 @@
+<%- include('../partials/head') %>
+<section class="card narrow">
+  <h1>Create an account</h1>
+  <%- include('../partials/flash') %>
+  <form method="post" action="/register" novalidate>
+    <label>
+      Name
+      <input type="text" name="name" value="<%= values.name || '' %>" required autofocus />
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" value="<%= values.email || '' %>" required />
+    </label>
+    <label>
+      Password
+      <input type="password" name="password" required minlength="8" />
+      <small>At least 8 characters.</small>
+    </label>
+    <label>
+      Confirm password
+      <input type="password" name="confirmPassword" required minlength="8" />
+    </label>
+    <button class="button" type="submit">Sign up</button>
+  </form>
+  <p class="muted">Already registered? <a href="/login">Log in</a>.</p>
+</section>
+<%- include('../partials/foot') %>

@@ -1,0 +1,16 @@
+<%- include('../partials/head') %>
+<section class="card narrow">
+  <h1>Rename folder</h1>
+  <%- include('../partials/flash') %>
+  <form method="post" action="/drive/<%= folder.id %>?_method=PUT" class="stacked">
+    <label>
+      Name
+      <input type="text" name="name" value="<%= folder.name %>" maxlength="80" required autofocus />
+    </label>
+    <div class="actions">
+      <button class="button" type="submit">Save</button>
+      <a class="button ghost" href="/drive/<%= folder.id %>">Cancel</a>
+    </div>
+  </form>
+</section>
+<%- include('../partials/foot') %>

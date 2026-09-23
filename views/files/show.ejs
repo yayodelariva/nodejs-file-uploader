@@ -1,0 +1,39 @@
+<%- include('../partials/head') %>
+<%- include('../partials/flash') %>
+
+<% if (!share) { %>
+  <nav class="crumbs">
+    <a href="/drive">My drive</a>
+    <% trail.forEach((entry) => { %>
+      <span aria-hidden="true">/</span>
+      <a href="/drive/<%= entry.id %>"><%= entry.name %></a>
+    <% }); %>
+    <span aria-hidden="true">/</span>
+    <span class="current"><%= file.name %></span>
+  </nav>
+<% } %>
+
+<section class="card">
+  <h1>📄 <%= file.name %></h1>
+  <dl class="details">
+    <div><dt>Size</dt><dd><%= formatBytes(file.size) %></dd></div>
+    <div><dt>Type</dt><dd><%= file.mimeType %></dd></div>
+    <div><dt>Uploaded</dt><dd><%= formatDate(file.createdAt) %></dd></div>
+    <div><dt>Stored in</dt><dd><%= file.provider %></dd></div>
+  </dl>
+
+  <div class="actions">
+    <% if (share) { %>
+      <a class="button" href="/share/<%= share.id %>/files/<%= file.id %>/download">Download</a>
+      <a class="button ghost" href="/share/<%= share.id %>">Back to shared folder</a>
+    <% } else { %>
+      <a class="button" href="/files/<%= file.id %>/download">Download</a>
+      <a class="button ghost" href="<%= file.folderId ? '/drive/' + file.folderId : '/drive' %>">Back</a>
+      <form method="post" action="/files/<%= file.id %>?_method=DELETE" class="inline"
+            onsubmit="return confirm('Delete this file?')">
+        <button class="button danger" type="submit">Delete</button>
+      </form>
+    <% } %>
+  </div>
+</section>
+<%- include('../partials/foot') %>

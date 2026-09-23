@@ -1,0 +1,20 @@
+<%- include('partials/head') %>
+<%- include('partials/flash') %>
+<section class="hero">
+  <h1>Your files, in folders, wherever you are.</h1>
+  <p>
+    Sign in to upload files, organise them into nested folders, and hand out
+    share links that expire whenever you say they do.
+  </p>
+  <div class="actions">
+    <a class="button" href="/register">Create an account</a>
+    <a class="button ghost" href="/login">Log in</a>
+  </div>
+  <ul class="features">
+    <li><strong>Sessions in Postgres</strong> — stay logged in across restarts.</li>
+    <li><strong>Nested folders</strong> — rename, move through, delete with their contents.</li>
+    <li><strong>Validated uploads</strong> — type and size checked before anything is stored.</li>
+    <li><strong>Expiring links</strong> — share a folder for 30m, 7d, 2w, your call.</li>
+  </ul>
+</section>
+<%- include('partials/foot') %>
