@@ -66,11 +66,11 @@ async function remove(id, ownerId) {
   const ids = await descendantIds(id);
   const files = await prisma.file.findMany({
     where: { folderId: { in: ids } },
-    select: { storageKey: true },
+    select: { storageKey: true, provider: true },
   });
 
   await prisma.folder.delete({ where: { id } });
-  await Promise.allSettled(files.map((file) => storage.remove(file.storageKey)));
+  await Promise.allSettled(files.map((file) => storage.remove(file.storageKey, file.provider)));
   return folder;
 }
 

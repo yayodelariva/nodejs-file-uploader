@@ -3,11 +3,17 @@
 
 generator client {
   provider = "prisma-client-js"
+  // Vercel's runtime is Amazon Linux, so the query engine for it has to be
+  // generated alongside the local one.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Runtime traffic goes through a pooler when deployed (serverless opens far
+  // more connections than Postgres can hold); migrations need a direct one.
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {

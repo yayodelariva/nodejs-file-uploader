@@ -38,7 +38,7 @@ async function remove(id, ownerId) {
   const file = await findOwned(id, ownerId);
   if (!file) return null;
   await prisma.file.delete({ where: { id } });
-  await storage.remove(file.storageKey).catch(() => {});
+  await storage.remove(file.storageKey, file.provider).catch(() => {});
   return file;
 }
 

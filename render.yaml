@@ -1,0 +1,35 @@
+# Render Blueprint. Create the service from this file with "New > Blueprint",
+# or configure the same values by hand in the dashboard.
+services:
+  - type: web
+    name: file-uploader
+    runtime: node
+    plan: free
+    # Put this in the same region as the Supabase project to keep round trips short.
+    region: oregon
+    healthCheckPath: /
+    # postinstall runs `prisma generate`; migrations are applied before the new
+    # instance starts taking traffic.
+    buildCommand: npm ci && npx prisma migrate deploy
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: STORAGE_PROVIDER
+        value: supabase
+      - key: SUPABASE_BUCKET
+        value: uploads
+      - key: MAX_UPLOAD_MB
+        value: 10
+      # Render generates this one; rotating it logs everybody out, nothing else.
+      - key: SESSION_SECRET
+        generateValue: true
+      # Secrets: set these in the dashboard, they are never read from the repo.
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false

@@ -45,8 +45,10 @@ app.use(
       maxAge: 7 * 24 * 60 * 60 * 1000,
     },
     store: new PrismaSessionStore(prisma, {
-      // Sweep expired rows every two minutes.
-      checkPeriod: 2 * 60 * 1000,
+      // Sweep expired rows every two minutes. Serverless instances freeze
+      // between requests, so the timer is skipped there; the store still
+      // refuses expired sessions when it reads them.
+      checkPeriod: process.env.VERCEL ? undefined : 2 * 60 * 1000,
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: undefined,
     }),
